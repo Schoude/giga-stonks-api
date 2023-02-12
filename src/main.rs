@@ -1,7 +1,8 @@
 use dotenv::dotenv;
 use finnhub::{Endpoint, FinnhubAPI};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     dotenv().ok();
     let finnhub_api_token: String =
         std::env::var("FINNHUB_API_TOKEN").expect("FINNHUB_API_TOKEN must be set.");
@@ -11,6 +12,8 @@ fn main() {
 
     let articles = fh_api
         .fetch_market_news()
+        .await
         .expect("The market news to be fetched");
+
     dbg!(articles);
 }

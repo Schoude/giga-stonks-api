@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 dotenv = "0.15.0"
 finnhub = { path = "./finnhub" }
+tokio = { version = "1.25.0", features = ["full"] }

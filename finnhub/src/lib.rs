@@ -1,3 +1,4 @@
+use reqwest::Method;
 use serde::Deserialize;
 
 const BASE_URL: &str = "https://finnhub.io/api/v1/";
@@ -6,6 +7,8 @@ const BASE_URL: &str = "https://finnhub.io/api/v1/";
 pub enum FinnhubError<'a> {
     #[error("Failed fetching the market news")]
     MarktedNewsRequestFailed(#[from] ureq::Error),
+    #[error("Failed fetching the market news")]
+    AsyncRequestFailed(#[from] reqwest::Error),
     #[error("Failed parsing to ArticleMarketNews")]
     ArticleMarketNewsParseFailed(serde_json::Error),
 
@@ -76,11 +79,20 @@ impl FinnhubAPI {
         )
     }
 
-    pub fn fetch_market_news(&self) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
+    pub async fn fetch_market_news(&self) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
         let url = self.prepare_url();
-        let res = ureq::get(&url)
-            .call()?
-            .into_json::<Vec<ArticleMarketNews>>()?;
+        let client = reqwest::Client::new();
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+
+        let res = client
+            .execute(req)
+            .await?
+            .json()
+            .await
+            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
         Ok(res)
     }
 }
