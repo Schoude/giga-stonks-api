@@ -1,12 +1,16 @@
 use dotenv::dotenv;
-use finnhub::get_market_news;
+use finnhub::{Endpoint, FinnhubAPI};
 
 fn main() {
     dotenv().ok();
     let finnhub_api_token: String =
         std::env::var("FINNHUB_API_TOKEN").expect("FINNHUB_API_TOKEN must be set.");
-    let articles =
-        get_market_news(&finnhub_api_token.as_str()).expect("Should load the market news articles");
 
+    let mut fh_api = FinnhubAPI::new(&finnhub_api_token);
+    fh_api.endpoint(Endpoint::MarketNews);
+
+    let articles = fh_api
+        .fetch_market_news()
+        .expect("The market news to be fetched");
     dbg!(articles);
 }

@@ -1,15 +1,21 @@
 use serde::Deserialize;
 
+const BASE_URL: &str = "https://finnhub.io/api/v1/";
+
 #[derive(thiserror::Error, Debug)]
-pub enum FinnhubError {
+pub enum FinnhubError<'a> {
     #[error("Failed fetching the market news")]
-    MarktedNewsRequestFailed(ureq::Error),
+    MarktedNewsRequestFailed(#[from] ureq::Error),
     #[error("Failed parsing to ArticleMarketNews")]
     ArticleMarketNewsParseFailed(serde_json::Error),
 
     // General errors
     #[error("Failed converting response to string")]
-    FailedResponseToString(std::io::Error),
+    FailedResponseToString(#[from] std::io::Error),
+    #[error("Failed to parse the URL")]
+    URlParsing(#[from] url::ParseError),
+    #[error("Bad Request")]
+    BadRequest(&'a str),
 }
 
 #[derive(Deserialize, Debug)]
@@ -25,19 +31,56 @@ pub struct ArticleMarketNews {
     url: String,
 }
 
-pub fn get_market_news(api_token: &str) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
-    let market_news_url = format!(
-        "{}{}",
-        "https://finnhub.io/api/v1/news?category=general&token=", api_token
-    );
+#[derive(Debug)]
+pub enum Endpoint {
+    MarketNews,
+}
 
-    let response = ureq::get(&market_news_url)
-        .call()
-        .map_err(|e| FinnhubError::MarktedNewsRequestFailed(e))?
-        .into_string()
-        .map_err(|e| FinnhubError::FailedResponseToString(e))?;
+impl ToString for Endpoint {
+    fn to_string(&self) -> String {
+        match self {
+            Self::MarketNews => "news?category=general".to_string(),
+        }
+    }
+}
 
-    let atricles = serde_json::from_str::<Vec<ArticleMarketNews>>(&response)
-        .map_err(|e| FinnhubError::ArticleMarketNewsParseFailed(e))?;
-    Ok(atricles)
+#[derive(Debug)]
+pub struct FinnhubAPI {
+    api_key: String,
+    endpoint: Endpoint,
+}
+
+impl FinnhubAPI {
+    pub fn new(api_key: &str) -> FinnhubAPI {
+        FinnhubAPI {
+            api_key: api_key.to_string(),
+            endpoint: Endpoint::MarketNews,
+        }
+    }
+
+    pub fn endpoint(&mut self, endpoint: Endpoint) -> &mut FinnhubAPI {
+        self.endpoint = endpoint;
+        self
+    }
+
+    fn get_api_token(&self) -> String {
+        format!("&token={}", self.api_key)
+    }
+
+    fn prepare_url(&self) -> String {
+        format!(
+            "{}{}{}",
+            BASE_URL,
+            self.endpoint.to_string(),
+            self.get_api_token(),
+        )
+    }
+
+    pub fn fetch_market_news(&self) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
+        let url = self.prepare_url();
+        let res = ureq::get(&url)
+            .call()?
+            .into_json::<Vec<ArticleMarketNews>>()?;
+        Ok(res)
+    }
 }
