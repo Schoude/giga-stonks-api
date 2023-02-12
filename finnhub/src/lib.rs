@@ -3,13 +3,13 @@ use serde::Deserialize;
 #[derive(thiserror::Error, Debug)]
 pub enum FinnhubError {
     #[error("Failed fetching the market news")]
-    MarktedNewsRequestFailed,
+    MarktedNewsRequestFailed(ureq::Error),
     #[error("Failed parsing to ArticleMarketNews")]
-    ArticleMarketNewsParseFailed,
+    ArticleMarketNewsParseFailed(serde_json::Error),
 
     // General errors
     #[error("Failed converting response to string")]
-    FailedResponseToString,
+    FailedResponseToString(std::io::Error),
 }
 
 #[derive(Deserialize, Debug)]
@@ -32,11 +32,11 @@ pub fn get_market_news(api_token: &str) -> Result<Vec<ArticleMarketNews>, Finnhu
 
     let response = ureq::get(&market_news_url)
         .call()
-        .map_err(|_e| FinnhubError::MarktedNewsRequestFailed)?
+        .map_err(|e| FinnhubError::MarktedNewsRequestFailed(e))?
         .into_string()
-        .map_err(|_e| FinnhubError::FailedResponseToString)?;
+        .map_err(|e| FinnhubError::FailedResponseToString(e))?;
 
     let atricles = serde_json::from_str::<Vec<ArticleMarketNews>>(&response)
-        .map_err(|_e| FinnhubError::ArticleMarketNewsParseFailed)?;
+        .map_err(|e| FinnhubError::ArticleMarketNewsParseFailed(e))?;
     Ok(atricles)
 }
