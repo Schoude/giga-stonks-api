@@ -26,9 +26,10 @@ pub struct ArticleMarketNews {
 }
 
 pub fn get_market_news(api_token: &str) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
-    let mut market_news_url =
-        String::from("https://finnhub.io/api/v1/news?category=general&token=");
-    market_news_url.push_str(api_token);
+    let market_news_url = format!(
+        "{}{}",
+        "https://finnhub.io/api/v1/news?category=general&token=", api_token
+    );
 
     let response = ureq::get(&market_news_url)
         .call()
