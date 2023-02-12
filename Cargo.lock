@@ -48,6 +48,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
+name = "finnhub"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "ureq",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -111,9 +120,7 @@ name = "market-news-api"
 version = "0.1.0"
 dependencies = [
  "dotenv",
- "serde",
- "serde_json",
- "ureq",
+ "finnhub",
 ]
 
 [[package]]
