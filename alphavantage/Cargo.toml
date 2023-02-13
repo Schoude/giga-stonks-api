@@ -1,17 +1,15 @@
 [package]
-name = "giga-stonks-api"
+name = "alphavantage"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.6.6"
-dotenv = "0.15.0"
-finnhub = { path = "./finnhub" }
-alphavantage = { path = "./alphavantage" }
-tokio = { version = "1.25.0", features = ["full"] }
-tracing = "0.1.37"
-tracing-subscriber = "0.3.16"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.93"
+ureq = { version = "2.6.2", features = ["json"] }
+thiserror = "1.0.38"
+url = "2.3.1"
+reqwest = { version = "0.11.14", features = ["json"] }
+

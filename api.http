@@ -8,3 +8,12 @@ GET http://localhost:3000
 
 # Market news
 GET http://localhost:3000/api/v1/market-news
+
+
+
+
+###
+# Alpha Vantage API
+
+# Market status
+GET http://localhost:3000/api/v1/market-status

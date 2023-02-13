@@ -1,13 +1,15 @@
-use reqwest::Method;
-use serde::{Deserialize, Serialize};
+pub mod market_status;
 
-const BASE_URL: &str = "https://finnhub.io/api/v1/";
+use market_status::{MarketStatusInfo, MarketStatusResponse};
+use reqwest::Method;
+
+const BASE_URL: &str = "https://www.alphavantage.co/query?function=";
 
 #[derive(thiserror::Error, Debug)]
-pub enum FinnhubError<'a> {
-    #[error("Failed fetching the market news")]
-    MarketNewsRequestFailed(#[from] ureq::Error),
-    #[error("Failed fetching the market news")]
+pub enum AlphaVantageError<'a> {
+    #[error("Failed fetching the market status")]
+    MarketStatusRequestFailed(#[from] ureq::Error),
+    #[error("Failed fetching the market status")]
     AsyncRequestFailed(#[from] reqwest::Error),
     #[error("Failed parsing to ArticleMarketNews")]
     ArticleMarketNewsParseFailed(serde_json::Error),
@@ -21,52 +23,40 @@ pub enum FinnhubError<'a> {
     BadRequest(&'a str),
 }
 
-#[derive(Deserialize, Debug, Serialize)]
-pub struct ArticleMarketNews {
-    headline: String,
-    category: String,
-    datetime: u32,
-    id: u32,
-    image: String,
-    source: String,
-    summary: String,
-    url: String,
-}
-
 #[derive(Debug)]
 pub enum Endpoint {
-    MarketNews,
+    MarketStatus,
 }
 
 impl ToString for Endpoint {
     fn to_string(&self) -> String {
         match self {
-            Self::MarketNews => "news?category=general".to_string(),
+            Self::MarketStatus => "MARKET_STATUS".to_string(),
         }
     }
 }
 
 #[derive(Debug)]
-pub struct FinnhubAPI {
+pub struct AlphaVantageAPI {
     api_key: String,
     endpoint: Endpoint,
 }
 
-impl FinnhubAPI {
-    pub fn new(api_key: &str) -> FinnhubAPI {
-        FinnhubAPI {
+impl AlphaVantageAPI {
+    pub fn new(api_key: &str) -> AlphaVantageAPI {
+        AlphaVantageAPI {
             api_key: api_key.to_string(),
-            endpoint: Endpoint::MarketNews,
+            endpoint: Endpoint::MarketStatus,
         }
     }
 
-    pub fn endpoint(&mut self, endpoint: Endpoint) -> &mut FinnhubAPI {
+    pub fn endpoint(&mut self, endpoint: Endpoint) -> &mut AlphaVantageAPI {
         self.endpoint = endpoint;
         self
     }
 
-    fn get_api_token(&self) -> String {
-        format!("&token={}", self.api_key)
+    fn get_api_key(&self) -> String {
+        format!("&apikey={}", self.api_key)
     }
 
     fn prepare_url(&self) -> String {
@@ -74,24 +64,24 @@ impl FinnhubAPI {
             "{}{}{}",
             BASE_URL,
             self.endpoint.to_string(),
-            self.get_api_token(),
+            self.get_api_key(),
         )
     }
 
-    pub async fn fetch_market_news(&self) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
+    pub async fn fetch_market_status(&self) -> Result<Vec<MarketStatusInfo>, AlphaVantageError> {
         let url = self.prepare_url();
         let client = reqwest::Client::new();
         let req = client
             .request(Method::GET, url)
             .build()
-            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+            .map_err(|e| AlphaVantageError::AsyncRequestFailed(e))?;
 
-        let res = client
+        let res: MarketStatusResponse = client
             .execute(req)
             .await?
             .json()
             .await
-            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
-        Ok(res)
+            .map_err(|e| AlphaVantageError::AsyncRequestFailed(e))?;
+        Ok(res.markets)
     }
 }

@@ -36,18 +36,23 @@ async fn fallback(uri: Uri) -> (StatusCode, String) {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    // initialize tracing
     tracing_subscriber::fmt::init();
 
-    let api_routes_v1 =
-        Router::new().route("/market-news", get(handlers::finnhub::get_market_news));
+    // Routes setup
+    let api_routes_v1 = Router::new()
+        .route("/market-news", get(handlers::finnhub::get_market_news))
+        .route(
+            "/market-status",
+            get(handlers::alphavantage::get_market_status),
+        );
 
-    // build our application with a route
+    // App setup
     let app = Router::new()
         .route("/", get(root))
         .nest("/api/v1", api_routes_v1)
         .fallback(fallback);
 
+    // Server setup
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
