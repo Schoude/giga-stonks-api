@@ -1,13 +1,17 @@
 use axum::{http::StatusCode, Json};
 use finnhub::{ArticleMarketNews, Endpoint, FinnhubAPI};
 
-pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
+fn setup_finnhub_api(endpoint: Endpoint) -> FinnhubAPI {
     let finnhub_api_token: String =
         std::env::var("FINNHUB_API_TOKEN").expect("FINNHUB_API_TOKEN must be set.");
 
-    let mut fh_api = FinnhubAPI::new(&finnhub_api_token);
-    fh_api.endpoint(Endpoint::MarketNews);
+    let mut finnhub_api = FinnhubAPI::new(&finnhub_api_token);
+    finnhub_api.endpoint(endpoint);
+    finnhub_api
+}
 
+pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
+    let fh_api = setup_finnhub_api(Endpoint::MarketNews);
     let articles = fh_api
         .fetch_market_news()
         .await
