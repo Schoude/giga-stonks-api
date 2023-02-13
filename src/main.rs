@@ -1,6 +1,9 @@
 use dotenv::dotenv;
 use finnhub::{Endpoint, FinnhubAPI};
 
+// Add this
+// rename to giga-stonks-api
+// https://crates.io/crates/axum
 #[tokio::main]
 async fn main() {
     dotenv().ok();
