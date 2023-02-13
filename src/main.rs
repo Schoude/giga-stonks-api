@@ -1,15 +1,13 @@
 use axum::{
-    http::StatusCode,
-    response::{Html, IntoResponse},
+    http::{StatusCode, Uri},
+    response::Html,
     routing::get,
-    Json, Router,
+    Router,
 };
-use std::net::SocketAddr;
-use tracing;
-use tracing_subscriber;
-
 use dotenv::dotenv;
-use finnhub::{Endpoint, FinnhubAPI};
+use std::net::SocketAddr;
+
+mod handlers;
 
 async fn root() -> Html<&'static str> {
     Html(
@@ -31,39 +29,29 @@ async fn root() -> Html<&'static str> {
     )
 }
 
-// Add this
-// rename to giga-stonks-api
-// https://crates.io/crates/axum
+async fn fallback(uri: Uri) -> (StatusCode, String) {
+    (StatusCode::NOT_FOUND, format!("No route for {}", uri))
+}
+
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     // initialize tracing
     tracing_subscriber::fmt::init();
 
+    let api_routes_v1 =
+        Router::new().route("/market-news", get(handlers::finnhub::get_market_news));
+
     // build our application with a route
     let app = Router::new()
-        // `GET /` goes to `root`
-        .route("/", get(root));
-    // `POST /users` goes to `create_user`
-    // .route("/users", post(create_user));
+        .route("/", get(root))
+        .nest("/api/v1", api_routes_v1)
+        .fallback(fallback);
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
-
-    // dotenv().ok();
-    // let finnhub_api_token: String =
-    //     std::env::var("FINNHUB_API_TOKEN").expect("FINNHUB_API_TOKEN must be set.");
-
-    // let mut fh_api = FinnhubAPI::new(&finnhub_api_token);
-    // fh_api.endpoint(Endpoint::MarketNews);
-
-    // let articles = fh_api
-    //     .fetch_market_news()
-    //     .await
-    //     .expect("The market news to be fetched");
 }

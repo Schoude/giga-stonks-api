@@ -1,5 +1,5 @@
 use reqwest::Method;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 const BASE_URL: &str = "https://finnhub.io/api/v1/";
 
@@ -21,7 +21,7 @@ pub enum FinnhubError<'a> {
     BadRequest(&'a str),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct ArticleMarketNews {
     headline: String,
     category: String,

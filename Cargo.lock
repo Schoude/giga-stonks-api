@@ -264,6 +264,8 @@ dependencies = [
  "axum",
  "dotenv",
  "finnhub",
+ "serde",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",

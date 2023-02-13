@@ -1,3 +1,10 @@
 ###
 # index HTML page
 GET http://localhost:3000
+
+
+###
+# Finnhub API
+
+# Market news
+GET http://localhost:3000/api/v1/market-news
