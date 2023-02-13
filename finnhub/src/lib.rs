@@ -28,7 +28,6 @@ pub struct ArticleMarketNews {
     datetime: u32,
     id: u32,
     image: String,
-    related: String,
     source: String,
     summary: String,
     url: String,
