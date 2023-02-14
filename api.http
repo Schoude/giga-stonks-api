@@ -3,17 +3,23 @@
 GET http://localhost:3000
 
 
-###
 # Finnhub API
 
-# Market news
+# MARKET NEWS
+###
 GET http://localhost:3000/api/v1/market-news
 
-
-
+# QUOTE
 
 ###
-# Alpha Vantage API
+# Get quotes for all markets on the overview
+GET http://localhost:3000/api/v1/quotes/overview
 
-# Market status
+
+
+
+
+# Alpha Vantage API
+###
+# MARKET STATUS
 GET http://localhost:3000/api/v1/market-status

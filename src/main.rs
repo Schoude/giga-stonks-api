@@ -45,6 +45,10 @@ async fn main() {
         .route(
             "/market-status",
             get(handlers::alphavantage::get_market_status),
+        )
+        .route(
+            "/quotes/overview",
+            get(handlers::finnhub::get_quotes_overview),
         );
 
     // App setup

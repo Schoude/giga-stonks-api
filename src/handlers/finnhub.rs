@@ -1,3 +1,4 @@
+use crate::indices::DOW_JONES;
 use axum::{http::StatusCode, Json};
 use finnhub::{market_news::ArticleMarketNews, Endpoint, FinnhubAPI};
 
@@ -17,4 +18,10 @@ pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
         .await
         .expect("The market news to be fetched");
     (StatusCode::OK, Json(articles))
+}
+
+pub async fn get_quotes_overview() {
+    for (ticker, _) in DOW_JONES.iter() {
+        println!("{ticker}");
+    }
 }
