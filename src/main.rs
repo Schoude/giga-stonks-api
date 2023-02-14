@@ -8,6 +8,7 @@ use dotenv::dotenv;
 use std::net::SocketAddr;
 
 mod handlers;
+pub mod indices;
 
 async fn root() -> Html<&'static str> {
     Html(
