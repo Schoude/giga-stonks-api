@@ -1,5 +1,5 @@
 use axum::{http::StatusCode, Json};
-use finnhub::{ArticleMarketNews, Endpoint, FinnhubAPI};
+use finnhub::{market_news::ArticleMarketNews, Endpoint, FinnhubAPI};
 
 fn setup_finnhub_api(endpoint: Endpoint) -> FinnhubAPI {
     let finnhub_api_token: String =
