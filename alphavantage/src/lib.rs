@@ -9,7 +9,7 @@ const BASE_URL: &str = "https://www.alphavantage.co/query?function=";
 pub enum AlphaVantageError<'a> {
     #[error("Failed fetching the market status")]
     MarketStatusRequestFailed(#[from] ureq::Error),
-    #[error("Failed fetching the market status")]
+    #[error("Failed async fetching the market status")]
     AsyncRequestFailed(#[from] reqwest::Error),
     #[error("Failed parsing to ArticleMarketNews")]
     ArticleMarketNewsParseFailed(serde_json::Error),
