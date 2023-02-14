@@ -1,9 +1,4 @@
-// struct IndexConsituent {
-//     ticker: String,
-//     name: String,
-// }
-
-pub const DOW_JONES: &'static [(&str, &str)] = &[
+pub const DOW_JONES: &[(&str, &str)] = &[
     ("JPM", "JPMorgan Chase & Co"),
     ("WBA", "Walgreens Boots Alliance Inc"),
     ("PG", "Procter & Gamble Co"),
