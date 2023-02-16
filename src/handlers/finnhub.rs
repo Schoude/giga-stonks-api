@@ -1,8 +1,7 @@
+use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
+use crate::finnhub_api::{market_news::ArticleMarketNews, symbol_quote::SymbolQuoteFrontend};
 use crate::indices::DOW_JONES;
 use axum::{http::StatusCode, Json};
-use finnhub::{
-    market_news::ArticleMarketNews, symbol_quote::SymbolQuoteFrontend, Endpoint, FinnhubAPI,
-};
 
 fn setup_finnhub_api(endpoint: Endpoint) -> FinnhubAPI {
     let finnhub_api_token: String =

@@ -4,19 +4,9 @@ use reqwest::Method;
 const BASE_URL: &str = "https://www.alphavantage.co/query?function=";
 
 #[derive(thiserror::Error, Debug)]
-pub enum AlphaVantageError<'a> {
+pub enum AlphaVantageError {
     #[error("Failed async fetching the market status")]
     AsyncRequestFailed(#[from] reqwest::Error),
-    #[error("Failed parsing to ArticleMarketNews")]
-    ArticleMarketNewsParseFailed(serde_json::Error),
-
-    // General errors
-    #[error("Failed converting response to string")]
-    FailedResponseToString(#[from] std::io::Error),
-    #[error("Failed to parse the URL")]
-    URlParsing(#[from] url::ParseError),
-    #[error("Bad Request")]
-    BadRequest(&'a str),
 }
 
 #[derive(Debug)]

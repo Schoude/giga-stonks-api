@@ -7,9 +7,10 @@ use axum::{
 use dotenv::dotenv;
 use std::net::SocketAddr;
 
+pub mod alphavantage_api;
+mod finnhub_api;
 mod handlers;
 pub mod indices;
-pub mod alphavantage_api;
 
 async fn root() -> Html<&'static str> {
     Html(

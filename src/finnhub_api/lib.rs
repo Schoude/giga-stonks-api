@@ -1,28 +1,13 @@
-pub mod market_news;
-pub mod symbol_quote;
-
-use market_news::ArticleMarketNews;
+use super::market_news::ArticleMarketNews;
+use super::symbol_quote::{SymbolQuote, SymbolQuoteFrontend};
 use reqwest::Method;
-use symbol_quote::{SymbolQuote, SymbolQuoteFrontend};
 
 const BASE_URL: &str = "https://finnhub.io/api/v1/";
 
 #[derive(thiserror::Error, Debug)]
-pub enum FinnhubError<'a> {
-    #[error("Failed fetching the market news")]
-    MarketNewsRequestFailed(#[from] ureq::Error),
+pub enum FinnhubError {
     #[error("Failed fetching the market news")]
     AsyncRequestFailed(#[from] reqwest::Error),
-    #[error("Failed parsing to ArticleMarketNews")]
-    ArticleMarketNewsParseFailed(serde_json::Error),
-
-    // General errors
-    #[error("Failed converting response to string")]
-    FailedResponseToString(#[from] std::io::Error),
-    #[error("Failed to parse the URL")]
-    URlParsing(#[from] url::ParseError),
-    #[error("Bad Request")]
-    BadRequest(&'a str),
 }
 
 #[derive(Debug)]
@@ -92,14 +77,14 @@ impl FinnhubAPI {
         let req = client
             .request(Method::GET, url)
             .build()
-            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+            .map_err(FinnhubError::AsyncRequestFailed)?;
 
         let res = client
             .execute(req)
             .await?
             .json()
             .await
-            .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+            .map_err(FinnhubError::AsyncRequestFailed)?;
         Ok(res)
     }
 
@@ -117,14 +102,14 @@ impl FinnhubAPI {
             let req = client
                 .request(Method::GET, url)
                 .build()
-                .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+                .map_err(FinnhubError::AsyncRequestFailed)?;
 
             let quote: SymbolQuote = client
                 .execute(req)
                 .await?
                 .json()
                 .await
-                .map_err(|e| FinnhubError::AsyncRequestFailed(e))?;
+                .map_err(FinnhubError::AsyncRequestFailed)?;
 
             let quote_fe = SymbolQuoteFrontend {
                 c: quote.c,
