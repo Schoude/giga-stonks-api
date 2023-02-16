@@ -62,12 +62,16 @@ impl AlphaVantageAPI {
             .build()
             .map_err(AlphaVantageError::AsyncRequestFailed)?;
 
-        let res: MarketStatusResponse = client
-            .execute(req)
-            .await?
-            .json()
-            .await
-            .map_err(AlphaVantageError::AsyncRequestFailed)?;
+        let res: MarketStatusResponse =
+            client
+                .execute(req)
+                .await?
+                .json()
+                .await
+                .unwrap_or(MarketStatusResponse {
+                    endpoint: "API limit reached".to_string(),
+                    markets: vec![],
+                });
         Ok(res.markets)
     }
 }

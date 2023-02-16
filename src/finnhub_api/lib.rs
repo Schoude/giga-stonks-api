@@ -115,7 +115,7 @@ impl FinnhubAPI {
                     .expect("the request to be executed")
                     .json()
                     .await
-                    .unwrap_or_else(|_| SymbolQuote {
+                    .unwrap_or(SymbolQuote {
                         c: 0.0,
                         d: 0.0,
                         dp: 0.0,

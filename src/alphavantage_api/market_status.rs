@@ -10,6 +10,6 @@ pub struct MarketStatusInfo {
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct MarketStatusResponse {
-    endpoint: String,
+    pub endpoint: String,
     pub markets: Vec<MarketStatusInfo>,
 }
