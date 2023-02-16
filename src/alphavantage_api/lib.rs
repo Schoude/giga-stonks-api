@@ -1,14 +1,10 @@
-pub mod market_status;
-
-use market_status::{MarketStatusInfo, MarketStatusResponse};
+use super::market_status::{MarketStatusInfo, MarketStatusResponse};
 use reqwest::Method;
 
 const BASE_URL: &str = "https://www.alphavantage.co/query?function=";
 
 #[derive(thiserror::Error, Debug)]
 pub enum AlphaVantageError<'a> {
-    #[error("Failed fetching the market status")]
-    MarketStatusRequestFailed(#[from] ureq::Error),
     #[error("Failed async fetching the market status")]
     AsyncRequestFailed(#[from] reqwest::Error),
     #[error("Failed parsing to ArticleMarketNews")]
@@ -74,14 +70,14 @@ impl AlphaVantageAPI {
         let req = client
             .request(Method::GET, url)
             .build()
-            .map_err(|e| AlphaVantageError::AsyncRequestFailed(e))?;
+            .map_err(AlphaVantageError::AsyncRequestFailed)?;
 
         let res: MarketStatusResponse = client
             .execute(req)
             .await?
             .json()
             .await
-            .map_err(|e| AlphaVantageError::AsyncRequestFailed(e))?;
+            .map_err(AlphaVantageError::AsyncRequestFailed)?;
         Ok(res.markets)
     }
 }

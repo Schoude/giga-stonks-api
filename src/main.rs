@@ -9,6 +9,7 @@ use std::net::SocketAddr;
 
 mod handlers;
 pub mod indices;
+pub mod alphavantage_api;
 
 async fn root() -> Html<&'static str> {
     Html(

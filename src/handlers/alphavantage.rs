@@ -1,5 +1,9 @@
-use alphavantage::{market_status::MarketStatusInfo, AlphaVantageAPI, Endpoint};
 use axum::{http::StatusCode, Json};
+
+use crate::alphavantage_api::{
+    lib::{AlphaVantageAPI, Endpoint},
+    market_status::MarketStatusInfo,
+};
 
 fn setup_av_api(endpoint: Endpoint) -> AlphaVantageAPI {
     let av_api_token: String =
