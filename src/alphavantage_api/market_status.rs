@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct MarketStatusInfo {
-    region: String,
+    pub region: String,
     local_open: String,
     local_close: String,
     current_status: String,

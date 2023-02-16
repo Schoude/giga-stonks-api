@@ -62,7 +62,7 @@ impl AlphaVantageAPI {
             .build()
             .map_err(AlphaVantageError::AsyncRequestFailed)?;
 
-        let res: MarketStatusResponse =
+        let mut res: MarketStatusResponse =
             client
                 .execute(req)
                 .await?
@@ -72,6 +72,10 @@ impl AlphaVantageAPI {
                     endpoint: "API limit reached".to_string(),
                     markets: vec![],
                 });
+
+        res.markets
+            .retain(|market| market.region == "United States" || market.region == "Germany");
+
         Ok(res.markets)
     }
 }
