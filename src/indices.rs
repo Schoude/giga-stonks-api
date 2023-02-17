@@ -1,3 +1,30 @@
+pub enum Index {
+    DowJones,
+    NASDAQ,
+}
+
+trait AsStr {
+    fn as_str(&self) -> &str;
+}
+
+impl ToString for Index {
+    fn to_string(&self) -> String {
+        match self {
+            Self::DowJones => "djia".to_string(),
+            Self::NASDAQ => "nasdq".to_string(),
+        }
+    }
+}
+
+impl AsStr for Index {
+    fn as_str(&self) -> &str {
+        match self {
+            Self::DowJones => "djia",
+            Self::NASDAQ => "nasdq",
+        }
+    }
+}
+
 // 30 entries
 pub const DOW_JONES: &[(&str, &str)] = &[
     ("JPM", "JPMorgan Chase & Co"),
