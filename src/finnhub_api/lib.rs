@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use super::market_news::ArticleMarketNews;
 use super::symbol_quote::{SymbolQuote, SymbolQuoteFrontend};
 use reqwest::Method;
@@ -123,18 +125,21 @@ impl FinnhubAPI {
                         l: 0.0,
                         o: 0.0,
                         pc: 0.0,
-                        t: 0,
+                        t: SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_millis(),
                     });
 
                 SymbolQuoteFrontend {
-                    c: quote.c,
-                    d: quote.d,
-                    dp: quote.d,
-                    h: quote.h,
-                    l: quote.l,
-                    o: quote.o,
-                    pc: quote.pc,
-                    t: quote.t,
+                    current_price: quote.c,
+                    delta: quote.d,
+                    delta_percent: quote.d,
+                    high: quote.h,
+                    low: quote.l,
+                    open: quote.o,
+                    previous_close: quote.pc,
+                    timestamp: quote.t,
                     symbol: symbol.to_string(),
                     name: name.to_string(),
                 }
@@ -150,14 +155,17 @@ impl FinnhubAPI {
             let quote_fe = match task.await {
                 Ok(q) => q,
                 Err(_) => SymbolQuoteFrontend {
-                    c: 0.0,
-                    d: 0.0,
-                    dp: 0.0,
-                    h: 0.0,
-                    l: 0.0,
-                    o: 0.0,
-                    pc: 0.0,
-                    t: 0,
+                    current_price: 0.0,
+                    delta: 0.0,
+                    delta_percent: 0.0,
+                    high: 0.0,
+                    low: 0.0,
+                    open: 0.0,
+                    previous_close: 0.0,
+                    timestamp: SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap()
+                        .as_millis(),
                     symbol: "".to_string(),
                     name: "".to_string(),
                 },

@@ -18,19 +18,19 @@ pub struct SymbolQuote {
     pub l: f32,
     pub o: f32,
     pub pc: f32,
-    pub t: u32,
+    pub t: u128,
 }
 
 #[derive(Deserialize, Debug, Serialize, Clone, PartialEq, PartialOrd)]
 pub struct SymbolQuoteFrontend {
-    pub c: f32,
-    pub d: f32,
-    pub dp: f32,
-    pub h: f32,
-    pub l: f32,
-    pub o: f32,
-    pub pc: f32,
-    pub t: u32,
+    pub current_price: f32,
+    pub delta: f32,
+    pub delta_percent: f32,
+    pub high: f32,
+    pub low: f32,
+    pub open: f32,
+    pub previous_close: f32,
+    pub timestamp: u128,
     pub symbol: String,
     pub name: String,
 }

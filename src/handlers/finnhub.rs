@@ -34,21 +34,21 @@ pub async fn get_quotes_overview() -> (StatusCode, Json<Value>) {
 
     let mut quote_dj_gainers: Vec<SymbolQuoteFrontend> = quotes_dj
         .iter()
-        .filter(|x| x.dp.is_sign_positive())
+        .filter(|x| x.delta_percent.is_sign_positive())
         .cloned()
         .collect();
 
     // Sort descending
-    quote_dj_gainers.sort_by(|a, b| b.dp.partial_cmp(&a.dp).unwrap());
+    quote_dj_gainers.sort_by(|a, b| b.delta_percent.partial_cmp(&a.delta_percent).unwrap());
 
     let mut quote_dj_losers: Vec<SymbolQuoteFrontend> = quotes_dj
         .iter()
-        .filter(|x| x.dp.is_sign_negative())
+        .filter(|x| x.delta_percent.is_sign_negative())
         .cloned()
         .collect();
 
     // Sort ascending
-    quote_dj_losers.sort_by(|a, b| a.dp.partial_cmp(&b.dp).unwrap());
+    quote_dj_losers.sort_by(|a, b| a.delta_percent.partial_cmp(&b.delta_percent).unwrap());
 
     (
         StatusCode::OK,
