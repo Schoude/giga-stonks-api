@@ -12,8 +12,10 @@ GET http://localhost:3000/api/v1/market-news
 # QUOTE
 
 ###
-# Get quotes for all markets on the overview
-GET http://localhost:3000/api/v1/quotes/overview
+# Get quotes for a specific index like 'djia' or 'nasdaq'
+GET http://localhost:3000/api/v1/quotes/djia
+###
+GET http://localhost:3000/api/v1/quotes/nasdaq
 
 
 

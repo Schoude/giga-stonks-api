@@ -20,6 +20,6 @@ This api summarizes some free stock market APIs. See the list below for the list
 
 ### Quote Data
 
-| Data                                                                | Method | URL                       | Data source(s) | Documentation                                                |
-| ------------------------------------------------------------------- | ------ | ------------------------- | -------------- | ------------------------------------------------------------ |
-| Quote data for each stock in the markets Dow Jones, S&P 500, NASDAQ | `GET`  | `/api/v1/quotes/overview` | Finnhub        | [Single Quote for Symbol](https://finnhub.io/docs/api/quote) |
+| Data                                                                                  | Method | URL                     | Data source(s) | Documentation                                                |
+| ------------------------------------------------------------------------------------- | ------ | ----------------------- | -------------- | ------------------------------------------------------------ |
+| Quote data for each stock in the given index: Dow Jones ('djia') or NASDAQ ('nasdaq') | `GET`  | `/api/v1/quotes/:index` | Finnhub        | [Single Quote for Symbol](https://finnhub.io/docs/api/quote) |

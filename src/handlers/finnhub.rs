@@ -1,7 +1,8 @@
 use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
 use crate::finnhub_api::market_news::ArticleMarketNews;
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
-use crate::indices::DOW_JONES;
+use crate::indices::{DOW_JONES, NASDAQ};
+use axum::extract::Path;
 use axum::{http::StatusCode, Json};
 use serde_json::{json, Value};
 
@@ -23,35 +24,46 @@ pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
     (StatusCode::OK, Json(articles))
 }
 
-pub async fn get_quotes_overview() -> (StatusCode, Json<Value>) {
+pub async fn get_quotes_for_index(Path(index): Path<String>) -> (StatusCode, Json<Value>) {
     let fh_api = setup_finnhub_api(Endpoint::Quote);
 
+    let market = match index.as_str() {
+        "djia" => DOW_JONES,
+        "nasdaq" => NASDAQ,
+        _ => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(json!( { "message": "Given index not valid. Try 'djia' or 'nasdaq'."})),
+            )
+        }
+    };
+
     // 1) Get data for Dow Jones and prepare it for the response
-    let quotes_dj = fh_api
-        .fetch_quotes_for_market(DOW_JONES)
+    let quotes = fh_api
+        .fetch_quotes_for_market(market)
         .await
         .expect("The market news to be fetched");
 
-    let mut quote_dj_gainers: Vec<SymbolQuoteFrontend> = quotes_dj
+    let mut quote_gainers: Vec<SymbolQuoteFrontend> = quotes
         .iter()
         .filter(|x| x.delta_percent.is_sign_positive())
         .cloned()
         .collect();
 
     // Sort descending
-    quote_dj_gainers.sort_by(|a, b| b.delta_percent.partial_cmp(&a.delta_percent).unwrap());
+    quote_gainers.sort_by(|a, b| b.delta_percent.partial_cmp(&a.delta_percent).unwrap());
 
-    let mut quote_dj_losers: Vec<SymbolQuoteFrontend> = quotes_dj
+    let mut quote_losers: Vec<SymbolQuoteFrontend> = quotes
         .iter()
         .filter(|x| x.delta_percent.is_sign_negative())
         .cloned()
         .collect();
 
     // Sort ascending
-    quote_dj_losers.sort_by(|a, b| a.delta_percent.partial_cmp(&b.delta_percent).unwrap());
+    quote_losers.sort_by(|a, b| a.delta_percent.partial_cmp(&b.delta_percent).unwrap());
 
     (
         StatusCode::OK,
-        Json(json!({ "dowJones": { "gainers": quote_dj_gainers, "losers": quote_dj_losers} })),
+        Json(json!( { "gainers": quote_gainers, "losers": quote_losers} )),
     )
 }
