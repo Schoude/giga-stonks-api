@@ -21,7 +21,7 @@ pub struct SymbolQuote {
     pub t: u32,
 }
 
-#[derive(Deserialize, Debug, Serialize)]
+#[derive(Deserialize, Debug, Serialize, Clone, PartialEq, PartialOrd)]
 pub struct SymbolQuoteFrontend {
     pub c: f32,
     pub d: f32,
