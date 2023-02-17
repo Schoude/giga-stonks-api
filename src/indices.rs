@@ -32,7 +32,7 @@ pub const DOW_JONES: &[(&str, &str)] = &[
     ("CSCO", "Cisco Systems Inc"),
 ];
 
-// 100 entries
+// 95 entries
 pub const NASDAQ: &[(&str, &str)] = &[
     ("VRSK", "Verisk Analytics Inc."),
     ("KHC", "Kraft Heinz Co"),
