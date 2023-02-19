@@ -5,6 +5,7 @@ use crate::indices::{DOW_JONES, NASDAQ};
 use axum::extract::Path;
 use axum::{http::StatusCode, Json};
 use serde_json::{json, Value};
+use std::cmp::Ordering;
 
 fn setup_finnhub_api(endpoint: Endpoint) -> FinnhubAPI {
     let finnhub_api_token: String =
@@ -62,8 +63,14 @@ pub async fn get_quotes_for_index(Path(index): Path<String>) -> (StatusCode, Jso
     // Sort ascending
     quote_losers.sort_by(|a, b| a.delta_percent.partial_cmp(&b.delta_percent).unwrap());
 
+    let sentiment = match quote_gainers.len().cmp(&quote_losers.len()) {
+        Ordering::Greater => "bullish",
+        Ordering::Less => "bearish",
+        Ordering::Equal => "neutral",
+    };
+
     (
         StatusCode::OK,
-        Json(json!( { "gainers": quote_gainers, "losers": quote_losers} )),
+        Json(json!( { "gainers": quote_gainers, "losers": quote_losers, "sentiment": sentiment} )),
     )
 }
