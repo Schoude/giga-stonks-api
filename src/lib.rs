@@ -5,7 +5,7 @@ use axum::{
     Router,
 };
 use dotenv::dotenv;
-use std::net::SocketAddr;
+use sync_wrapper::SyncWrapper;
 
 pub mod alphavantage_api;
 mod finnhub_api;
@@ -36,8 +36,8 @@ async fn fallback(uri: Uri) -> (StatusCode, String) {
     (StatusCode::NOT_FOUND, format!("No route for {}", uri))
 }
 
-#[tokio::main]
-async fn main() {
+#[shuttle_service::main]
+async fn axum() -> shuttle_service::ShuttleAxum {
     dotenv().ok();
     tracing_subscriber::fmt::init();
 
@@ -59,11 +59,15 @@ async fn main() {
         .nest("/api/v1", api_routes_v1)
         .fallback(fallback);
 
+    let sync_wrapper = SyncWrapper::new(app);
+
+    Ok(sync_wrapper)
+
     // Server setup
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    // let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    // tracing::debug!("listening on {}", addr);
+    // axum::Server::bind(&addr)
+    //     .serve(app.into_make_service())
+    //     .await
+    //     .unwrap();
 }
