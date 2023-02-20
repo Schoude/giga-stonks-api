@@ -2,22 +2,23 @@ use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
 use crate::finnhub_api::market_news::ArticleMarketNews;
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
 use crate::indices::{DOW_JONES, NASDAQ};
-use axum::extract::Path;
+use crate::AppState;
+use axum::extract::{Path, State};
 use axum::{http::StatusCode, Json};
 use serde_json::{json, Value};
 use std::cmp::Ordering;
+use std::sync::Arc;
 
-fn setup_finnhub_api(endpoint: Endpoint) -> FinnhubAPI {
-    let finnhub_api_token: String =
-        std::env::var("FINNHUB_API_TOKEN").expect("FINNHUB_API_TOKEN must be set.");
-
-    let mut finnhub_api = FinnhubAPI::new(&finnhub_api_token);
+fn setup_finnhub_api(endpoint: Endpoint, api_token: &str) -> FinnhubAPI {
+    let mut finnhub_api = FinnhubAPI::new(api_token);
     finnhub_api.endpoint(endpoint);
     finnhub_api
 }
 
-pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
-    let fh_api = setup_finnhub_api(Endpoint::MarketNews);
+pub async fn get_market_news(
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
+    let fh_api = setup_finnhub_api(Endpoint::MarketNews, &state.api_token_finnhub);
     let articles = fh_api
         .fetch_market_news()
         .await
@@ -25,8 +26,11 @@ pub async fn get_market_news() -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
     (StatusCode::OK, Json(articles))
 }
 
-pub async fn get_quotes_for_index(Path(index): Path<String>) -> (StatusCode, Json<Value>) {
-    let fh_api = setup_finnhub_api(Endpoint::Quote);
+pub async fn get_quotes_for_index(
+    Path(index): Path<String>,
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<Value>) {
+    let fh_api = setup_finnhub_api(Endpoint::Quote, &state.api_token_finnhub);
 
     let market = match index.as_str() {
         "djia" => DOW_JONES,
