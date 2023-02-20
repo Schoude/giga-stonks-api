@@ -63,7 +63,7 @@ async fn axum(
         api_token_alphavantage,
     });
 
-    tracing_subscriber::fmt::init();
+    // tracing_subscriber::fmt::init();
 
     // Routes setup
     let api_routes_v1 = Router::new()

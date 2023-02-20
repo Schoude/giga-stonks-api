@@ -134,7 +134,7 @@ impl FinnhubAPI {
                 SymbolQuoteFrontend {
                     current_price: quote.c,
                     delta: quote.d,
-                    delta_percent: quote.d,
+                    delta_percent: quote.dp,
                     high: quote.h,
                     low: quote.l,
                     open: quote.o,

@@ -436,8 +436,6 @@ dependencies = [
  "sync_wrapper",
  "thiserror",
  "tokio",
- "tracing",
- "tracing-subscriber",
  "url",
 ]
 

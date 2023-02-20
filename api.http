@@ -1,21 +1,21 @@
 ###
 # index HTML page
-GET http://localhost:3000
+GET http://localhost:8000
 
 
 # Finnhub API
 
 # MARKET NEWS
 ###
-GET http://localhost:3000/api/v1/market-news
+GET http://localhost:8000/api/v1/market-news
 
 # QUOTE
 
 ###
 # Get quotes for a specific index like 'djia' or 'nasdaq'
-GET http://localhost:3000/api/v1/quotes/djia
+GET http://localhost:8000/api/v1/quotes/djia
 ###
-GET http://localhost:3000/api/v1/quotes/nasdaq
+GET http://localhost:8000/api/v1/quotes/nasdaq
 
 
 
@@ -24,4 +24,4 @@ GET http://localhost:3000/api/v1/quotes/nasdaq
 # Alpha Vantage API
 ###
 # MARKET STATUS
-GET http://localhost:3000/api/v1/market-status
+GET http://localhost:8000/api/v1/market-status
