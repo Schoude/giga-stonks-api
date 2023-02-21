@@ -73,8 +73,19 @@ pub async fn get_quotes_for_index(
         Ordering::Equal => "neutral",
     };
 
+    let gains_percentage_sum: f32 = quote_gainers.iter().map(|q| q.delta_percent).sum();
+    let losses_percentage_sum: f32 = quote_losers.iter().map(|q| q.delta_percent).sum();
+    let avg_percentage_gains = gains_percentage_sum / quote_gainers.len() as f32;
+    let avg_percentage_losses = losses_percentage_sum / quote_losers.len() as f32;
+
     (
         StatusCode::OK,
-        Json(json!( { "gainers": quote_gainers, "losers": quote_losers, "sentiment": sentiment} )),
+        Json(json!( {
+            "sentiment": sentiment,
+            "avg_percentage_gains": avg_percentage_gains,
+            "avg_percentage_losses": avg_percentage_losses,
+            "gainers": quote_gainers,
+            "losers": quote_losers,
+        } )),
     )
 }
