@@ -59,7 +59,7 @@ pub const DOW_JONES: &[(&str, &str)] = &[
     ("CSCO", "Cisco Systems Inc"),
 ];
 
-// 57 entries
+// 55 entries
 pub const NASDAQ: &[(&str, &str)] = &[
     ("AMZN", "Amazon.com, Inc."),
     ("META", "Meta Platforms Inc."),
@@ -102,9 +102,7 @@ pub const NASDAQ: &[(&str, &str)] = &[
     ("SWKS", "Skyworks Solutions, Inc."),
     ("INCY", "Incyte Corporation"),
     ("SPLK", "Splunk Inc."),
-    ("VRTX", "Vertex Pharmaceuticals Incorporated"),
     ("WBA", "Walgreens Boots Alliance, Inc."),
-    ("SGEN", "Seagen Inc."),
     ("CPRT", "Copart, Inc."),
     ("WDC", "Western Digital Corporation"),
     ("NTAP", "NetApp, Inc."),
