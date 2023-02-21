@@ -53,7 +53,6 @@ pub async fn get_quotes_for_index(
 
     let last_quote = quotes_extended_cloned
         .last()
-        .clone()
         .expect("the extended quotes array to have a last item.");
 
     let mut lowest_rate_limit = quotes_extended
