@@ -59,10 +59,10 @@ pub const DOW_JONES: &[(&str, &str)] = &[
     ("CSCO", "Cisco Systems Inc"),
 ];
 
-// 60 entries
+// 57 entries
 pub const NASDAQ: &[(&str, &str)] = &[
     ("AMZN", "Amazon.com, Inc."),
-    ("FB", "Facebook, Inc."),
+    ("META", "Meta Platforms Inc."),
     ("TSLA", "Tesla, Inc."),
     ("NVDA", "NVIDIA Corporation"),
     ("PYPL", "PayPal Holdings, Inc."),
@@ -100,17 +100,14 @@ pub const NASDAQ: &[(&str, &str)] = &[
     ("CDNS", "Cadence Design Systems, Inc."),
     ("CHKP", "Check Point Software Technologies Ltd."),
     ("SWKS", "Skyworks Solutions, Inc."),
-    ("CTXS", "Citrix Systems, Inc."),
     ("INCY", "Incyte Corporation"),
     ("SPLK", "Splunk Inc."),
     ("VRTX", "Vertex Pharmaceuticals Incorporated"),
     ("WBA", "Walgreens Boots Alliance, Inc."),
     ("SGEN", "Seagen Inc."),
-    ("CERN", "Cerner Corporation"),
     ("CPRT", "Copart, Inc."),
     ("WDC", "Western Digital Corporation"),
     ("NTAP", "NetApp, Inc."),
-    ("MXIM", "Maxim Integrated Products, Inc."),
     ("TTWO", "Take-Two Interactive Software, Inc."),
     ("PEP", "PepsiCo, Inc."),
     ("INTU", "Intuit Inc."),
