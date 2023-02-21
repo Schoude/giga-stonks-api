@@ -1,8 +1,9 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::market_news::ArticleMarketNews;
-use super::symbol_quote::{SymbolQuote, SymbolQuoteFrontend};
+use super::symbol_quote::{SymbolQuote, SymbolQuoteExtended};
 use reqwest::Method;
+use serde::{Deserialize, Serialize};
 
 const BASE_URL: &str = "https://finnhub.io/api/v1/";
 
@@ -25,6 +26,12 @@ impl ToString for Endpoint {
             Self::Quote => "quote?symbol=".to_string(),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, PartialOrd)]
+pub struct RateLimitInfo {
+    pub ratelimit_remaining: String,
+    pub ratelimit_reset: String,
 }
 
 #[derive(Debug)]
@@ -93,7 +100,7 @@ impl FinnhubAPI {
     pub async fn fetch_quotes_for_market(
         &self,
         market: &'static [(&str, &str)],
-    ) -> Result<Vec<SymbolQuoteFrontend>, FinnhubError> {
+    ) -> Result<Vec<SymbolQuoteExtended>, FinnhubError> {
         let client = reqwest::Client::new();
 
         let mut tasks = Vec::new();
@@ -111,27 +118,33 @@ impl FinnhubAPI {
                     .build()
                     .expect("the request to be build.");
 
-                let quote: SymbolQuote = client
+                let response = client
                     .execute(req)
                     .await
-                    .expect("the request to be executed")
-                    .json()
-                    .await
-                    .unwrap_or(SymbolQuote {
-                        c: 0.0,
-                        d: 0.0,
-                        dp: 0.0,
-                        h: 0.0,
-                        l: 0.0,
-                        o: 0.0,
-                        pc: 0.0,
-                        t: SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_millis(),
-                    });
+                    .expect("the request to be executed");
+                let headers = response.headers().clone();
+                let ratelimit_remaining = headers.get("X-Ratelimit-Remaining").unwrap();
+                let ratelimit_reset = headers.get("X-Ratelimit-Reset").unwrap();
+                let rate_limit_info = RateLimitInfo {
+                    ratelimit_remaining: String::from(ratelimit_remaining.to_str().unwrap()),
+                    ratelimit_reset: String::from(ratelimit_reset.to_str().unwrap()),
+                };
 
-                SymbolQuoteFrontend {
+                let quote = response.json().await.unwrap_or(SymbolQuote {
+                    c: 0.0,
+                    d: 0.0,
+                    dp: 0.0,
+                    h: 0.0,
+                    l: 0.0,
+                    o: 0.0,
+                    pc: 0.0,
+                    t: SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap()
+                        .as_millis(),
+                });
+
+                SymbolQuoteExtended {
                     current_price: quote.c,
                     delta: quote.d,
                     delta_percent: quote.dp,
@@ -142,19 +155,20 @@ impl FinnhubAPI {
                     timestamp: quote.t,
                     symbol: symbol.to_string(),
                     name: name.to_string(),
+                    rate_limit_info,
                 }
             });
 
             tasks.push(task);
         }
 
-        let mut quotes_fe: Vec<SymbolQuoteFrontend> = vec![];
+        let mut quotes_fe: Vec<SymbolQuoteExtended> = vec![];
 
         // Loop through each task and await the result from the Future
         for task in tasks {
             let quote_fe = match task.await {
                 Ok(q) => q,
-                Err(_) => SymbolQuoteFrontend {
+                Err(_) => SymbolQuoteExtended {
                     current_price: 0.0,
                     delta: 0.0,
                     delta_percent: 0.0,
@@ -168,6 +182,10 @@ impl FinnhubAPI {
                         .as_millis(),
                     symbol: "".to_string(),
                     name: "".to_string(),
+                    rate_limit_info: RateLimitInfo {
+                        ratelimit_remaining: "0".to_string(),
+                        ratelimit_reset: "0".to_string(),
+                    },
                 },
             };
 

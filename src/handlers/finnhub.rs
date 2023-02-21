@@ -1,4 +1,4 @@
-use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
+use crate::finnhub_api::lib::{Endpoint, FinnhubAPI, RateLimitInfo};
 use crate::finnhub_api::market_news::ArticleMarketNews;
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
 use crate::indices::{DOW_JONES, NASDAQ};
@@ -43,11 +43,38 @@ pub async fn get_quotes_for_index(
         }
     };
 
-    // 1) Get data for Dow Jones and prepare it for the response
-    let quotes = fh_api
+    // 1) Get data for the given index and prepare it for the response
+    let quotes_extended = fh_api
         .fetch_quotes_for_market(market)
         .await
         .expect("The market news to be fetched");
+
+    // TODO: Does not contain the lowest values of the requests.
+    let last_quote = quotes_extended
+        .last()
+        .clone()
+        .expect("the extended quotes array to have a last item.");
+
+    let rate_limit_info = RateLimitInfo {
+        ratelimit_remaining: last_quote.rate_limit_info.ratelimit_remaining.to_owned(),
+        ratelimit_reset: last_quote.rate_limit_info.ratelimit_reset.to_owned(),
+    };
+
+    let quotes: Vec<SymbolQuoteFrontend> = quotes_extended
+        .into_iter()
+        .map(|q| SymbolQuoteFrontend {
+            current_price: q.current_price,
+            delta: q.delta,
+            delta_percent: q.delta_percent,
+            high: q.high,
+            low: q.low,
+            open: q.open,
+            previous_close: q.previous_close,
+            timestamp: q.timestamp,
+            symbol: q.symbol,
+            name: q.name,
+        })
+        .collect();
 
     let mut quote_gainers: Vec<SymbolQuoteFrontend> = quotes
         .iter()
@@ -86,6 +113,8 @@ pub async fn get_quotes_for_index(
             "avg_percentage_losses": avg_percentage_losses,
             "gainers": quote_gainers,
             "losers": quote_losers,
+            "rate_limit_remaining": rate_limit_info.ratelimit_remaining.parse::<u32>().unwrap(),
+            "rate_limit_reset": rate_limit_info.ratelimit_reset.parse::<u128>().unwrap(),
         } )),
     )
 }
