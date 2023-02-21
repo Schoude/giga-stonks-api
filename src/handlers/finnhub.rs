@@ -1,4 +1,4 @@
-use crate::finnhub_api::lib::{Endpoint, FinnhubAPI, RateLimitInfo};
+use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
 use crate::finnhub_api::market_news::ArticleMarketNews;
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
 use crate::indices::{DOW_JONES, NASDAQ};
@@ -49,16 +49,24 @@ pub async fn get_quotes_for_index(
         .await
         .expect("The market news to be fetched");
 
-    // TODO: Does not contain the lowest values of the requests.
-    let last_quote = quotes_extended
+    let quotes_extended_cloned = quotes_extended.clone();
+
+    let last_quote = quotes_extended_cloned
         .last()
         .clone()
         .expect("the extended quotes array to have a last item.");
 
-    let rate_limit_info = RateLimitInfo {
-        ratelimit_remaining: last_quote.rate_limit_info.ratelimit_remaining.to_owned(),
-        ratelimit_reset: last_quote.rate_limit_info.ratelimit_reset.to_owned(),
-    };
+    let mut lowest_rate_limit = quotes_extended
+        .iter()
+        .map(|q| {
+            q.rate_limit_info
+                .ratelimit_remaining
+                .parse::<u32>()
+                .unwrap()
+        })
+        .collect::<Vec<u32>>();
+
+    lowest_rate_limit.sort();
 
     let quotes: Vec<SymbolQuoteFrontend> = quotes_extended
         .into_iter()
@@ -113,8 +121,8 @@ pub async fn get_quotes_for_index(
             "avg_percentage_losses": avg_percentage_losses,
             "gainers": quote_gainers,
             "losers": quote_losers,
-            "rate_limit_remaining": rate_limit_info.ratelimit_remaining.parse::<u32>().unwrap(),
-            "rate_limit_reset": rate_limit_info.ratelimit_reset.parse::<u128>().unwrap(),
+            "rate_limit_remaining": lowest_rate_limit.first().expect("there to be a first entry in the rate limit remaining array"),
+            "rate_limit_reset": last_quote.rate_limit_info.ratelimit_reset.to_owned().parse::<u128>().unwrap(),
         } )),
     )
 }
