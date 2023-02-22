@@ -103,7 +103,7 @@ impl AlphaVantageAPI {
         time_from: String,
     ) -> Result<Vec<NewsSentimentFeedEntry>, AlphaVantageError> {
         let query = format!("&time_from={time_from}T0000");
-        let url = self.prepare_url(Some(&query.as_str()));
+        let url = self.prepare_url(Some(query.as_str()));
 
         let client = reqwest::Client::new();
         let req = client
