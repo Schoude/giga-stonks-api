@@ -18,8 +18,8 @@ pub struct NewsSentimentFeedEntry {
     banner_image: Option<String>,
     source: String,
     category_within_source: String,
-    overall_sentiment_score: f32,
-    overall_sentiment_label: String,
+    pub overall_sentiment_score: f32,
+    pub overall_sentiment_label: String,
     ticker_sentiment: Vec<TickerSentimentEntry>,
 }
 

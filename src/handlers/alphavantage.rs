@@ -5,6 +5,7 @@ use axum::{
     http::StatusCode,
     Json,
 };
+use serde_json::{json, Value};
 
 use crate::{
     alphavantage_api::{
@@ -35,7 +36,7 @@ pub async fn get_market_status(
 pub async fn get_news_sentiment(
     State(state): State<Arc<AppState>>,
     time_from: Query<QueryNewsSentiment>,
-) -> (StatusCode, Json<Vec<NewsSentimentFeedEntry>>) {
+) -> (StatusCode, Json<Value>) {
     let time_from: QueryNewsSentiment = time_from.0;
     let av_api = setup_av_api(Endpoint::NewsSentiment, &state.api_token_alphavantage);
     let news_sentiment = av_api
@@ -43,5 +44,33 @@ pub async fn get_news_sentiment(
         .await
         .expect("The news sentiment to be fetched");
 
-    (StatusCode::OK, Json(news_sentiment))
+    let mut bullish: Vec<&NewsSentimentFeedEntry> = news_sentiment
+        .iter()
+        .filter(|feed_entry| feed_entry.overall_sentiment_label.contains("Bullish"))
+        .collect();
+
+    bullish.sort_by(|a, b| {
+        b.overall_sentiment_score
+            .partial_cmp(&a.overall_sentiment_score)
+            .unwrap()
+    });
+
+    let mut bearish: Vec<&NewsSentimentFeedEntry> = news_sentiment
+        .iter()
+        .filter(|feed_entry| feed_entry.overall_sentiment_label.contains("Bearish"))
+        .collect();
+
+    bearish.sort_by(|a, b| {
+        a.overall_sentiment_score
+            .partial_cmp(&b.overall_sentiment_score)
+            .unwrap()
+    });
+
+    (
+        StatusCode::OK,
+        Json(json!({
+            "news_bullish": bullish,
+            "news_bearish": bearish,
+        })),
+    )
 }
