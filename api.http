@@ -25,3 +25,7 @@ GET http://localhost:8000/api/v1/quotes/nasdaq
 ###
 # MARKET STATUS
 GET http://localhost:8000/api/v1/market-status
+
+###
+# NEWS SENTIMENT
+GET http://localhost:8000/api/v1/news-sentiment?time_from=20230221

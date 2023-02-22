@@ -58,8 +58,8 @@ impl FinnhubAPI {
     }
 
     /**
-     *  Possibilitis for url_add
-     * 1) Endpount::Quote: a stock symbol like "AAPL" or "IBM"
+     *  Possibilities for url_add
+     * 1) Endpoint::Quote: a stock symbol like "AAPL" or "IBM"
      */
     fn prepare_url(&self, url_add: Option<&str>) -> String {
         if let Some(url) = url_add {

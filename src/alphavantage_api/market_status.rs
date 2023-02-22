@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+// Types for Market News
 #[derive(Deserialize, Debug, Serialize)]
 pub struct MarketStatusInfo {
     pub region: String,
