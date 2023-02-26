@@ -1,13 +1,14 @@
-use std::sync::Arc;
-
 use axum::{
-    http::{StatusCode, Uri},
+    http::{Method, StatusCode, Uri},
     response::Html,
     routing::get,
     Router,
 };
 use shuttle_secrets::SecretStore;
+use std::sync::Arc;
 use sync_wrapper::SyncWrapper;
+use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 
 pub mod alphavantage_api;
 mod finnhub_api;
@@ -63,10 +64,17 @@ async fn axum(
         api_token_alphavantage,
     });
 
-    // tracing_subscriber::fmt::init();
+    // CORS setup via tower service in middleware layer
+    let cors = CorsLayer::new()
+        .allow_methods(vec![Method::GET])
+        .allow_origin(Any)
+        .allow_credentials(false);
+
+    let service = ServiceBuilder::new().layer(cors);
 
     // Routes setup
     let api_routes_v1 = Router::new()
+        .layer(service)
         .route("/market-news", get(handlers::finnhub::get_market_news))
         .route(
             "/market-status",
