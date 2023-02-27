@@ -6,9 +6,10 @@ This api summarizes some free stock market APIs. See the list below for the list
 
 ### News, Sentiments and Insider Informations
 
-| Data        | Method | URL                   | Data source(s) | Documentation                                          |
-| ----------- | ------ | --------------------- | -------------- | ------------------------------------------------------ |
-| Market News | `GET`  | `/api/v1/market-news` | Finnhub        | [Market News](https://finnhub.io/docs/api/market-news) |
+| Data           | Method | URL                                         | Data source(s) | Documentation                                                               |
+| -------------- | ------ | ------------------------------------------- | -------------- | --------------------------------------------------------------------------- |
+| Market News    | `GET`  | `/api/v1/market-news`                       | Finnhub        | [Market News](https://finnhub.io/docs/api/market-news)                      |
+| News Sentiment | `GET`  | `/api/v1/news-sentiment?time_from=yyyymmdd` | Alpha Vantage  | [News Sentiment](https://www.alphavantage.co/documentation/#news-sentiment) |
 
 
 ### Market Information (general)
@@ -23,3 +24,9 @@ This api summarizes some free stock market APIs. See the list below for the list
 | Data                                                                                  | Method | URL                     | Data source(s) | Documentation                                                |
 | ------------------------------------------------------------------------------------- | ------ | ----------------------- | -------------- | ------------------------------------------------------------ |
 | Quote data for each stock in the given index: Dow Jones ('djia') or NASDAQ ('nasdaq') | `GET`  | `/api/v1/quotes/:index` | Finnhub        | [Single Quote for Symbol](https://finnhub.io/docs/api/quote) |
+
+### Company Information
+
+| Data            | Method | URL                                   | Data source(s) | Documentation                                                     |
+| --------------- | ------ | ------------------------------------- | -------------- | ----------------------------------------------------------------- |
+| Company Profile | `GET`  | `/api/v1/company-profile?symbol=AAPL` | Finnhub        | [Company Profile 2](https://finnhub.io/docs/api/company-profile2) |
