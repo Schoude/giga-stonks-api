@@ -478,7 +478,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "giga-stonks-api-00000000-0000-0000-0000-000000000000"
+name = "giga-stonks-api"
 version = "0.1.0"
 dependencies = [
  "axum",
