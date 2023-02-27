@@ -17,7 +17,11 @@ GET http://localhost:8000/api/v1/quotes/djia
 ###
 GET http://localhost:8000/api/v1/quotes/nasdaq
 
+# COMPANY INFORMATION
 
+###
+# Company Profile for symbol
+GET http://localhost:8000/api/v1/company-profile/AAPL
 
 
 

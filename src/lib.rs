@@ -88,6 +88,10 @@ async fn axum(
         .route(
             "/quotes/:index",
             get(handlers::finnhub::get_quotes_for_index),
+        )
+        .route(
+            "/company-profile/:symbol",
+            get(handlers::finnhub::get_company_profile),
         );
 
     // App setup

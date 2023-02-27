@@ -29,4 +29,4 @@ This api summarizes some free stock market APIs. See the list below for the list
 
 | Data            | Method | URL                                   | Data source(s) | Documentation                                                     |
 | --------------- | ------ | ------------------------------------- | -------------- | ----------------------------------------------------------------- |
-| Company Profile | `GET`  | `/api/v1/company-profile?symbol=AAPL` | Finnhub        | [Company Profile 2](https://finnhub.io/docs/api/company-profile2) |
+| Company Profile | `GET`  | `/api/v1/company-profile/AAPL` | Finnhub        | [Company Profile 2](https://finnhub.io/docs/api/company-profile2) |

@@ -1,5 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use super::company_profile::CompanyProfile;
 use super::market_news::ArticleMarketNews;
 use super::symbol_quote::{SymbolQuote, SymbolQuoteExtended};
 use reqwest::Method;
@@ -17,6 +18,7 @@ pub enum FinnhubError {
 pub enum Endpoint {
     MarketNews,
     Quote,
+    CompanyProfile,
 }
 
 impl ToString for Endpoint {
@@ -24,6 +26,7 @@ impl ToString for Endpoint {
         match self {
             Self::MarketNews => "news?category=general".to_string(),
             Self::Quote => "quote?symbol=".to_string(),
+            Self::CompanyProfile => "stock/profile2?symbol=".to_string(),
         }
     }
 }
@@ -60,6 +63,7 @@ impl FinnhubAPI {
     /**
      *  Possibilities for url_add
      * 1) Endpoint::Quote: a stock symbol like "AAPL" or "IBM"
+     * 2) Endpoint::CompanyProfile: a stock symbol like "AAPL" or "IBM"
      */
     fn prepare_url(&self, url_add: Option<&str>) -> String {
         if let Some(url) = url_add {
@@ -193,5 +197,28 @@ impl FinnhubAPI {
         }
 
         Ok(quotes_fe)
+    }
+
+    pub async fn fetch_company_profile(
+        &self,
+        symbol: &str,
+    ) -> Result<CompanyProfile, FinnhubError> {
+        let client = reqwest::Client::new();
+        let url = self.prepare_url(Some(symbol));
+
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .expect("the request to be build.");
+
+        let result = client
+            .execute(req)
+            .await
+            .expect("the request to be executed")
+            .json::<CompanyProfile>()
+            .await
+            .expect("the company profile response to be parsed to JSON");
+
+        Ok(result)
     }
 }

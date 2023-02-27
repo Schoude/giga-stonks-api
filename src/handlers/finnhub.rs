@@ -1,3 +1,4 @@
+use crate::finnhub_api::company_profile::CompanyProfile;
 use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
 use crate::finnhub_api::market_news::ArticleMarketNews;
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
@@ -124,4 +125,18 @@ pub async fn get_quotes_for_index(
             "rate_limit_reset": last_quote.rate_limit_info.ratelimit_reset.to_owned().parse::<u128>().unwrap(),
         } )),
     )
+}
+
+pub async fn get_company_profile(
+    Path(symbol): Path<String>,
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<CompanyProfile>) {
+    let fh_api = setup_finnhub_api(Endpoint::CompanyProfile, &state.api_token_finnhub);
+
+    let company_profile = fh_api
+        .fetch_company_profile(&symbol)
+        .await
+        .expect("the company profile to be fetched.");
+
+    (StatusCode::OK, Json(company_profile))
 }
