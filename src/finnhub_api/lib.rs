@@ -2,6 +2,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::company_profile::CompanyProfile;
 use super::market_news::ArticleMarketNews;
+use super::social_sentiment::SocialSentimentResponse;
 use super::symbol_quote::{SymbolQuote, SymbolQuoteExtended};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
@@ -19,6 +20,7 @@ pub enum Endpoint {
     MarketNews,
     Quote,
     CompanyProfile,
+    SocialSentiment,
 }
 
 impl ToString for Endpoint {
@@ -27,6 +29,7 @@ impl ToString for Endpoint {
             Self::MarketNews => "news?category=general".to_string(),
             Self::Quote => "quote?symbol=".to_string(),
             Self::CompanyProfile => "stock/profile2?symbol=".to_string(),
+            Self::SocialSentiment => "stock/social-sentiment".to_string(),
         }
     }
 }
@@ -218,6 +221,30 @@ impl FinnhubAPI {
             .json::<CompanyProfile>()
             .await
             .expect("the company profile response to be parsed to JSON");
+
+        Ok(result)
+    }
+
+    pub async fn fetch_social_sentiment(
+        &self,
+        // ?symbol=XXX&?from=yyyy-mm-dd
+        url_add: &str,
+    ) -> Result<SocialSentimentResponse, FinnhubError> {
+        let client = reqwest::Client::new();
+        let url = self.prepare_url(Some(url_add));
+
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .expect("the request to be build.");
+
+        let result = client
+            .execute(req)
+            .await
+            .expect("the request to be executed")
+            .json::<SocialSentimentResponse>()
+            .await
+            .expect("the social sentiment response to be parsed to JSON");
 
         Ok(result)
     }

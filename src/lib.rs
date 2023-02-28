@@ -86,6 +86,11 @@ async fn axum(
             get(handlers::alphavantage::get_news_sentiment),
         )
         .route(
+            // /api/v1/social-sentiment?symbol=XXXX&time_from=yyyy-mm-dd
+            "/social-sentiment",
+            get(handlers::finnhub::get_social_sentiment),
+        )
+        .route(
             "/quotes/:index",
             get(handlers::finnhub::get_quotes_for_index),
         )

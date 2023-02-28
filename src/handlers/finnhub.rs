@@ -1,10 +1,11 @@
 use crate::finnhub_api::company_profile::CompanyProfile;
 use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
 use crate::finnhub_api::market_news::ArticleMarketNews;
+use crate::finnhub_api::social_sentiment::{QuerySocialSentiment, SocialSentimentResponse};
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
 use crate::indices::{DOW_JONES, NASDAQ};
 use crate::AppState;
-use axum::extract::{Path, State};
+use axum::extract::{Path, Query, State};
 use axum::{http::StatusCode, Json};
 use serde_json::{json, Value};
 use std::cmp::Ordering;
@@ -139,4 +140,19 @@ pub async fn get_company_profile(
         .expect("the company profile to be fetched.");
 
     (StatusCode::OK, Json(company_profile))
+}
+
+pub async fn get_social_sentiment(
+    State(state): State<Arc<AppState>>,
+    query: Query<QuerySocialSentiment>,
+) -> (StatusCode, Json<SocialSentimentResponse>) {
+    let fh_api = setup_finnhub_api(Endpoint::SocialSentiment, &state.api_token_finnhub);
+    let url_add = format!("?symbol={}&from={}", query.0.symbol, query.0.time_from);
+
+    let social_sentiment = fh_api
+        .fetch_social_sentiment(&url_add)
+        .await
+        .expect("the social sentiment to be fetched.");
+
+    (StatusCode::OK, Json(social_sentiment))
 }

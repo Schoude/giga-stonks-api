@@ -24,6 +24,15 @@ GET http://localhost:8000/api/v1/quotes/nasdaq
 GET http://localhost:8000/api/v1/company-profile/AAPL
 
 
+# SOCIAL SENTIMENT
+
+###
+# Get social sentiment for stocks on Reddit and Twitter. This endpoint is currently in Beta.
+GET http://localhost:8000/api/v1/social-sentiment?symbol=AAPL&time_from=yyyy-mm-dd
+
+
+
+
 
 # Alpha Vantage API
 ###
