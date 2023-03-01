@@ -9,6 +9,10 @@ GET http://localhost:8000
 ###
 GET http://localhost:8000/api/v1/market-news
 
+# COMPANY NEWS
+###
+GET http://localhost:8000/api/v1/company-news?symbol=CAT&time_from=2023-02-28&time_to=2023-03-01
+
 # QUOTE
 
 ###

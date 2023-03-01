@@ -1,6 +1,6 @@
 use crate::finnhub_api::company_profile::CompanyProfile;
 use crate::finnhub_api::lib::{Endpoint, FinnhubAPI};
-use crate::finnhub_api::market_news::ArticleMarketNews;
+use crate::finnhub_api::market_news::{ArticleMarketNews, QueryCompanyNews};
 use crate::finnhub_api::social_sentiment::{QuerySocialSentiment, SocialSentimentResponse};
 use crate::finnhub_api::symbol_quote::SymbolQuoteFrontend;
 use crate::indices::{DOW_JONES, NASDAQ};
@@ -25,6 +25,18 @@ pub async fn get_market_news(
         .fetch_market_news()
         .await
         .expect("The market news to be fetched");
+    (StatusCode::OK, Json(articles))
+}
+
+pub async fn get_company_news(
+    State(state): State<Arc<AppState>>,
+    query: Query<QueryCompanyNews>,
+) -> (StatusCode, Json<Vec<ArticleMarketNews>>) {
+    let fh_api = setup_finnhub_api(Endpoint::CompanyNews, &state.api_token_finnhub);
+    let articles = fh_api
+        .fetch_company_news(&query.0.symbol, &query.0.time_from, &query.0.time_to)
+        .await
+        .expect("The company news to be fetched");
     (StatusCode::OK, Json(articles))
 }
 

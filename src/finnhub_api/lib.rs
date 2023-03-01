@@ -18,6 +18,7 @@ pub enum FinnhubError {
 #[derive(Debug)]
 pub enum Endpoint {
     MarketNews,
+    CompanyNews,
     Quote,
     CompanyProfile,
     SocialSentiment,
@@ -27,6 +28,7 @@ impl ToString for Endpoint {
     fn to_string(&self) -> String {
         match self {
             Self::MarketNews => "news?category=general".to_string(),
+            Self::CompanyNews => "company-news".to_string(),
             Self::Quote => "quote?symbol=".to_string(),
             Self::CompanyProfile => "stock/profile2?symbol=".to_string(),
             Self::SocialSentiment => "stock/social-sentiment".to_string(),
@@ -89,6 +91,24 @@ impl FinnhubAPI {
 
     pub async fn fetch_market_news(&self) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
         let url = self.prepare_url(None);
+        let client = reqwest::Client::new();
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .map_err(FinnhubError::AsyncRequestFailed)?;
+
+        let res = client
+            .execute(req)
+            .await?
+            .json()
+            .await
+            .map_err(FinnhubError::AsyncRequestFailed)?;
+        Ok(res)
+    }
+
+    pub async fn fetch_company_news(&self, symbol: &str, time_from: &str, time_to: &str) -> Result<Vec<ArticleMarketNews>, FinnhubError> {
+        let url_add = format!("?symbol={symbol}&from={time_from}&to={time_to}");
+        let url = self.prepare_url(Some(&url_add));
         let client = reqwest::Client::new();
         let req = client
             .request(Method::GET, url)

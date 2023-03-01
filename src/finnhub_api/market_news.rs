@@ -11,3 +11,10 @@ pub struct ArticleMarketNews {
     summary: String,
     url: String,
 }
+
+#[derive(Deserialize)]
+pub struct QueryCompanyNews {
+    pub symbol: String,
+    pub time_from: String,
+    pub time_to: String,
+}

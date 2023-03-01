@@ -77,6 +77,11 @@ async fn axum(
         .layer(service)
         .route("/market-news", get(handlers::finnhub::get_market_news))
         .route(
+            // /api/v1/company-news?symbol=XXXX&time_from=yyyy-mm-dd&time_to=yyyy-mm-dd
+            "/company-news",
+            get(handlers::finnhub::get_company_news),
+        )
+        .route(
             "/market-status",
             get(handlers::alphavantage::get_market_status),
         )
