@@ -11,7 +11,7 @@ use crate::{
     alphavantage_api::{
         lib::{AlphaVantageAPI, Endpoint},
         market_status::MarketStatusInfo,
-        news_sentiment::{NewsSentimentFeedEntry, QueryNewsSentiment},
+        news_sentiment::{NewsSentimentFeedEntry, QueryNewsSentiment, QueryNewsSentimentTicker},
     },
     AppState,
 };
@@ -43,6 +43,49 @@ pub async fn get_news_sentiment(
         .fetch_news_sentiment(time_from.time_from)
         .await
         .expect("The news sentiment to be fetched");
+
+    let mut bullish: Vec<&NewsSentimentFeedEntry> = news_sentiment
+        .iter()
+        .filter(|feed_entry| feed_entry.overall_sentiment_label.contains("Bullish"))
+        .collect();
+
+    bullish.sort_by(|a, b| {
+        b.overall_sentiment_score
+            .partial_cmp(&a.overall_sentiment_score)
+            .unwrap()
+    });
+
+    let mut bearish: Vec<&NewsSentimentFeedEntry> = news_sentiment
+        .iter()
+        .filter(|feed_entry| feed_entry.overall_sentiment_label.contains("Bearish"))
+        .collect();
+
+    bearish.sort_by(|a, b| {
+        a.overall_sentiment_score
+            .partial_cmp(&b.overall_sentiment_score)
+            .unwrap()
+    });
+
+    (
+        StatusCode::OK,
+        Json(json!({
+            "news_bullish": bullish,
+            "news_bearish": bearish,
+        })),
+    )
+}
+
+pub async fn get_news_sentiment_ticker(
+    State(state): State<Arc<AppState>>,
+    query: Query<QueryNewsSentimentTicker>,
+) -> (StatusCode, Json<Value>) {
+    let time_from = query.0.time_from;
+    let ticker= query.0.ticker;
+    let av_api = setup_av_api(Endpoint::NewsSentiment, &state.api_token_alphavantage);
+    let news_sentiment = av_api
+        .fetch_news_sentiment_ticker(ticker, time_from)
+        .await
+        .expect("The news sentiment for a ticker to be fetched");
 
     let mut bullish: Vec<&NewsSentimentFeedEntry> = news_sentiment
         .iter()

@@ -32,3 +32,9 @@ pub struct NewsSentimentResponse {
 pub struct QueryNewsSentiment {
     pub time_from: String,
 }
+
+#[derive(Deserialize)]
+pub struct QueryNewsSentimentTicker {
+    pub ticker: String,
+    pub time_from: String,
+}

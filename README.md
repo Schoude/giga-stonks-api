@@ -6,11 +6,12 @@ This api summarizes some free stock market APIs. See the list below for the list
 
 ### News, Sentiments and Insider Informations
 
-| Data             | Method | URL                                                       | Data source(s) | Documentation                                                               |
-| ---------------- | ------ | --------------------------------------------------------- | -------------- | --------------------------------------------------------------------------- |
-| Market News      | `GET`  | `/api/v1/market-news`                                     | Finnhub        | [Market News](https://finnhub.io/docs/api/market-news)                      |
-| News Sentiment   | `GET`  | `/api/v1/news-sentiment?time_from=yyyymmdd`               | Alpha Vantage  | [News Sentiment](https://www.alphavantage.co/documentation/#news-sentiment) |
-| Social Sentiment | `GET`  | `/api/v1/social-sentiment?symbol=XXXX&time_from=yyyymmdd` | Finnhub        | [Social Sentiment](https://finnhub.io/docs/api/social-sentiment)            |
+| Data                      | Method | URL                                                            | Data source(s) | Documentation                                                               |
+| ------------------------- | ------ | -------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------- |
+| Market News               | `GET`  | `/api/v1/market-news`                                          | Finnhub        | [Market News](https://finnhub.io/docs/api/market-news)                      |
+| News Sentiment            | `GET`  | `/api/v1/news-sentiment?time_from=yyyymmdd`                    | Alpha Vantage  | [News Sentiment](https://www.alphavantage.co/documentation/#news-sentiment) |
+| News Sentiment for Ticker | `GET`  | `/api/v1/news-sentiment-ticker?ticker=XXXX&time_from=yyyymmdd` | Alpha Vantage  | [News Sentiment](https://www.alphavantage.co/documentation/#news-sentiment) |
+| Social Sentiment          | `GET`  | `/api/v1/social-sentiment?symbol=XXXX&time_from=yyyymmdd`      | Finnhub        | [Social Sentiment](https://finnhub.io/docs/api/social-sentiment)            |
 
 
 ### Market Information (general)

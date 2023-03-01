@@ -120,4 +120,28 @@ impl AlphaVantageAPI {
 
         Ok(res.feed)
     }
+
+    pub async fn fetch_news_sentiment_ticker(
+        &self,
+        ticker: String,
+        time_from: String,
+    ) -> Result<Vec<NewsSentimentFeedEntry>, AlphaVantageError> {
+        let query = format!("&tickers={ticker}&sort=RELEVANCE&time_from={time_from}T0000");
+        let url = self.prepare_url(Some(query.as_str()));
+
+        let client = reqwest::Client::new();
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .map_err(AlphaVantageError::AsyncRequestFailed)?;
+
+        let res: NewsSentimentResponse = client
+            .execute(req)
+            .await?
+            .json()
+            .await
+            .unwrap_or(NewsSentimentResponse { feed: vec![] });
+
+        Ok(res.feed)
+    }
 }
