@@ -6,7 +6,6 @@ use axum::{
 };
 use shuttle_secrets::SecretStore;
 use std::sync::Arc;
-use sync_wrapper::SyncWrapper;
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -44,10 +43,8 @@ async fn fallback(uri: Uri) -> (StatusCode, String) {
     (StatusCode::NOT_FOUND, format!("No route for {}", uri))
 }
 
-#[shuttle_service::main]
-async fn axum(
-    #[shuttle_secrets::Secrets] secret_store: SecretStore,
-) -> shuttle_service::ShuttleAxum {
+#[shuttle_runtime::main]
+async fn axum(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_axum::ShuttleAxum {
     let api_token_finnhub = if let Some(secret) = secret_store.get("FINNHUB_API_TOKEN") {
         secret
     } else {
@@ -116,7 +113,5 @@ async fn axum(
         .fallback(fallback)
         .with_state(app_state);
 
-    let sync_wrapper = SyncWrapper::new(app);
-
-    Ok(sync_wrapper)
+    Ok(app.into())
 }
