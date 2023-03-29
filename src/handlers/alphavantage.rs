@@ -80,7 +80,7 @@ pub async fn get_news_sentiment_ticker(
     query: Query<QueryNewsSentimentTicker>,
 ) -> (StatusCode, Json<Value>) {
     let time_from = query.0.time_from;
-    let ticker= query.0.ticker;
+    let ticker = query.0.ticker;
     let av_api = setup_av_api(Endpoint::NewsSentiment, &state.api_token_alphavantage);
     let news_sentiment = av_api
         .fetch_news_sentiment_ticker(ticker, time_from)
@@ -114,6 +114,17 @@ pub async fn get_news_sentiment_ticker(
         Json(json!({
             "news_bullish": bullish,
             "news_bearish": bearish,
+        })),
+    )
+}
+
+pub async fn get_earnings_calendar(
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<Value>) {
+    (
+        StatusCode::OK,
+        Json(json!({
+            "TODO": "TO BE IMPLEMENTED",
         })),
     )
 }

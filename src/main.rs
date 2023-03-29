@@ -104,6 +104,10 @@ async fn axum(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_
         .route(
             "/company-profile/:symbol",
             get(handlers::finnhub::get_company_profile),
+        )
+        .route(
+            "/earnings-calendar",
+            get(handlers::alphavantage::get_earnings_calendar),
         );
 
     // App setup

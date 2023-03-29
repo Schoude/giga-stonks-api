@@ -50,3 +50,8 @@ GET http://localhost:8000/api/v1/news-sentiment?time_from=20230221
 ###
 # NEWS SENTIMENT FOR TICKER
 GET http://localhost:8000/api/v1/news-sentiment-ticker?ticker=CAT&time_from=20230228
+
+
+###
+# EARNINGS CALENDAR
+GET http://localhost:8000/api/v1/earnings-calendar
