@@ -16,6 +16,7 @@ pub enum AlphaVantageError {
 pub enum Endpoint {
     MarketStatus,
     NewsSentiment,
+    EarningsCalendar,
 }
 
 impl ToString for Endpoint {
@@ -23,6 +24,7 @@ impl ToString for Endpoint {
         match self {
             Self::MarketStatus => "MARKET_STATUS".to_string(),
             Self::NewsSentiment => "NEWS_SENTIMENT".to_string(),
+            Self::EarningsCalendar => "EARNINGS_CALENDAR".to_string(),
         }
     }
 }
@@ -143,5 +145,20 @@ impl AlphaVantageAPI {
             .unwrap_or(NewsSentimentResponse { feed: vec![] });
 
         Ok(res.feed)
+    }
+
+    pub async fn fetch_earnings_calendar(&self) -> Result<String, AlphaVantageError> {
+        let query = format!("&horizon=3month");
+        let url = self.prepare_url(Some(query.as_str()));
+        let client = reqwest::Client::new();
+        let req = client
+            .request(Method::GET, url)
+            .build()
+            .map_err(AlphaVantageError::AsyncRequestFailed)?;
+
+        let res = client.execute(req).await?;
+        let text = res.text().await.unwrap_or("ERORR".to_string());
+
+        Ok(text)
     }
 }

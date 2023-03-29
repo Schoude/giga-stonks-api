@@ -1,3 +1,4 @@
+use csv::ReaderBuilder;
 use std::sync::Arc;
 
 use axum::{
@@ -9,6 +10,7 @@ use serde_json::{json, Value};
 
 use crate::{
     alphavantage_api::{
+        earnings_calendar::Earning,
         lib::{AlphaVantageAPI, Endpoint},
         market_status::MarketStatusInfo,
         news_sentiment::{NewsSentimentFeedEntry, QueryNewsSentiment, QueryNewsSentimentTicker},
@@ -121,10 +123,39 @@ pub async fn get_news_sentiment_ticker(
 pub async fn get_earnings_calendar(
     State(state): State<Arc<AppState>>,
 ) -> (StatusCode, Json<Value>) {
+    let av_api = setup_av_api(Endpoint::EarningsCalendar, &state.api_token_alphavantage);
+    let csv_string = av_api
+        .fetch_earnings_calendar()
+        .await
+        .expect("The earnings calendar to be fetched.");
+
+    let mut rdr = ReaderBuilder::new()
+        .delimiter(b',')
+        .from_reader(csv_string.as_bytes());
+
+    let mut estimates_high = Vec::<Earning>::new();
+    let mut estimates_low = Vec::<Earning>::new();
+
+    for result in rdr.deserialize() {
+        let record: Earning = result.expect("The record to be an Earning");
+
+        if let Some(estimate) = record.estimate {
+            if estimate >= 1.5 {
+                estimates_high.push(record);
+            } else if estimate <= -1.5 {
+                estimates_low.push(record);
+            }
+        }
+    }
+
+    estimates_high.sort_by(|a, b| b.estimate.partial_cmp(&a.estimate).unwrap());
+    estimates_low.sort_by(|a, b| a.estimate.partial_cmp(&b.estimate).unwrap());
+
     (
         StatusCode::OK,
         Json(json!({
-            "TODO": "TO BE IMPLEMENTED",
+            "estimates_high": estimates_high,
+            "estimates_low": estimates_low,
         })),
     )
 }
