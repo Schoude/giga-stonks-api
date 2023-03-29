@@ -148,8 +148,7 @@ impl AlphaVantageAPI {
     }
 
     pub async fn fetch_earnings_calendar(&self) -> Result<String, AlphaVantageError> {
-        let query = format!("&horizon=3month");
-        let url = self.prepare_url(Some(query.as_str()));
+        let url = self.prepare_url(Some("&horizon=3month"));
         let client = reqwest::Client::new();
         let req = client
             .request(Method::GET, url)
